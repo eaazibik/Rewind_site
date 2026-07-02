@@ -8,7 +8,12 @@ Steps to deploy to Vercel + Supabase:
 
 2. In the project settings, get the Project URL and anon/public key. Set these in Vercel as environment variables `SUPABASE_URL` and `SUPABASE_KEY`.
 
-3. In Vercel, set the Root Directory to `rewind-site`.
+3. In Supabase dashboard → Authentication → Settings:
+   - `Site URL`: `http://localhost:3000` (for local testing) and your Vercel URL
+   - `Redirect URLs`: add `http://localhost:3000` and your Vercel deployment URL
+   - `Allowed redirect URLs`: add the same URLs
+
+4. In Vercel, set the Root Directory to `rewind-site`.
    - Build command: `npm run build`
    - Output directory: leave empty (Vercel will serve files from the selected root)
 
