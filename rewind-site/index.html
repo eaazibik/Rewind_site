@@ -391,6 +391,26 @@
   <svg viewBox="0 0 24 24" fill="#1a1410"><path d="M17.5 14.4c-.3-.1-1.7-.8-1.9-.9-.3-.1-.5-.1-.6.1-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-.8-.4-1.7-.9-2.4-1.6-.6-.6-1.1-1.4-1.5-2.1-.1-.2 0-.4.1-.5.2-.2.4-.5.6-.7.1-.2.2-.4.1-.6-.1-.2-.6-1.5-.8-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.7.7-1 1.6-1 2.6.1 1.2.6 2.4 1.4 3.5 1.5 2 3.4 3.4 5.7 4.1.6.2 1.2.3 1.9.2.8-.1 1.6-.7 2-1.4.1-.3.2-.6.1-.9-.1-.1-.2-.1-.4-.2z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.6 1.4 5.1L2 22l5-1.3c1.4.8 3.1 1.2 4.9 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3C4.1 15 3.6 13.5 3.6 12c0-4.6 3.8-8.4 8.4-8.4s8.4 3.8 8.4 8.4-3.8 8.2-8.4 8.2z"/></svg>
 </a>
 
+<!-- ADMIN / POSTS (visible when signed-in) -->
+<div id="adminPanel" style="position:fixed;right:18px;bottom:88px;z-index:60;max-width:360px;width:100%;display:none;">
+  <div class="panel card" style="padding:12px;background:rgba(20,20,20,0.92);color:#fff;border-radius:8px;">
+    <div id="adminGreet" style="font-weight:600;margin-bottom:8px;"></div>
+    <button id="requestAdminBtn" class="btn btn-ghost" style="display:none;margin-bottom:8px;">Request Admin Access</button>
+
+    <form id="postForm" style="display:none;margin-bottom:8px;">
+      <div style="margin-bottom:6px;"><input id="postTitle" placeholder="Post title" required style="width:100%;padding:8px;border-radius:4px;border:1px solid #333;background:#111;color:#fff;"/></div>
+      <div style="margin-bottom:6px;"><textarea id="postBody" placeholder="Write your post..." rows="3" style="width:100%;padding:8px;border-radius:4px;border:1px solid #333;background:#111;color:#fff;"></textarea></div>
+      <div style="margin-bottom:8px;"><input id="postImage" type="file" accept="image/*" /></div>
+      <button id="postSubmit" class="btn btn-gold">Create Post</button>
+    </form>
+
+    <div id="superadminPanel" style="display:none;margin-top:6px;">
+      <div style="font-size:0.9rem;margin-bottom:6px;">Admin Requests</div>
+      <div id="adminRequestsList" style="max-height:200px;overflow:auto;"></div>
+    </div>
+  </div>
+</div>
+
 <!-- Mobile menu -->
 <nav>
   <div class="mobile-menu" id="mobileMenu">

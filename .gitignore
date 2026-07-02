@@ -1,0 +1,4 @@
+# Ignore generated client env
+rewind-site/env.js
+node_modules
+.DS_Store

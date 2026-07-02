@@ -5,6 +5,10 @@
 
 import { supabase } from './supabase.js';
 
+// Current user's profile cached here after sign-in
+export let currentProfile = null;
+export const SUPERADMIN_EMAIL = 'agucharles667@gmail.com';
+
 // ── Helpers ──────────────────────────────────────────────────
 function showMsg(elId, text, isError = false) {
   const el = document.getElementById(elId);
@@ -27,9 +31,57 @@ export async function initAuth() {
   const { data: { session } } = await supabase.auth.getSession();
   updateNavForSession(session);
 
+  if (session?.user) await loadProfile(session.user.id);
+
   supabase.auth.onAuthStateChange((_event, session) => {
     updateNavForSession(session);
+    if (session?.user) loadProfile(session.user.id);
+    else currentProfile = null;
   });
+}
+
+export async function loadProfile(userId) {
+  if (!userId) return null;
+  const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
+  if (error) { console.warn('loadProfile:', error.message); currentProfile = null; return null; }
+  currentProfile = data;
+  return currentProfile;
+}
+
+export async function requestAdminApproval() {
+  if (!currentProfile) throw new Error('Not signed in');
+  const { error } = await supabase.from('admin_requests').insert({ user_id: currentProfile.id, status: 'pending' });
+  if (error) throw error;
+  return true;
+}
+
+export async function fetchAdminRequests() {
+  // only intended for superadmin front-end use
+  const { data, error } = await supabase.from('admin_requests').select('*').eq('status', 'pending');
+  if (error) throw error;
+  return data;
+}
+
+export async function approveAdmin(userId) {
+  // Only superadmin should call this from UI
+  const { error } = await supabase.from('profiles').update({ role: 'admin' }).eq('id', userId);
+  if (error) throw error;
+  // mark request handled if exists
+  await supabase.from('admin_requests').update({ status: 'approved' }).eq('user_id', userId);
+  return true;
+}
+
+export async function revokeAdmin(userId) {
+  // Only superadmin should call this from UI
+  const { error } = await supabase.from('profiles').update({ role: 'user' }).eq('id', userId);
+  if (error) throw error;
+  return true;
+}
+
+export function canCreatePost() {
+  if (!currentProfile) return false;
+  if (currentProfile.email === SUPERADMIN_EMAIL) return true;
+  return currentProfile.role === 'admin' || currentProfile.role === 'superadmin';
 }
 
 function updateNavForSession(session) {

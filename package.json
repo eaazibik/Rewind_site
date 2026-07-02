@@ -1,0 +1,11 @@
+{
+  "name": "rewind-site",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node ./build-env.js"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}

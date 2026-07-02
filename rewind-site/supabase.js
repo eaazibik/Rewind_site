@@ -6,7 +6,14 @@
 
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-const SUPABASE_URL  = 'https://YOUR_PROJECT_ID.supabase.co';   // ← replace
-const SUPABASE_KEY  = 'YOUR_ANON_PUBLIC_KEY';                   // ← replace
+// Reads config from window.__ENV (generated during build) or falls back to placeholders.
+const env = (typeof window !== 'undefined' && window.__ENV) ? window.__ENV : {
+  SUPABASE_URL: 'https://tfturoppawtgkjxpjzan.supabase.co',
+  SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmdHVyb3BwYXd0Z2tqeHBqemFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMDc3MjAsImV4cCI6MjA5ODU4MzcyMH0.27A4LfO_DRLE_u-Sh0TqfAlXGJj_i_8lGNurc13GYOA'
+};
+
+const SUPABASE_URL  = env.SUPABASE_URL;
+const SUPABASE_KEY  = env.SUPABASE_KEY;
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
