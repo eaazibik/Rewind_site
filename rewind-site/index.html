@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Rewind Luxury Place — Independence Layout, Enugu</title>
+<meta name="description" content="Restaurant, lounge & game nights in Independence Layout, Enugu. Dine-in, takeaway, delivery. Open daily, closes 5AM.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     NAV
+══════════════════════════════════════════ -->
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="#top" class="nav-logo">Rewind <span class="dot">·</span> Luxury Place</a>
+
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#menu">Menu</a>
+      <a href="#game-nights">Game Nights</a>
+      <a href="#location">Location</a>
+      <a href="#contact">Contact</a>
+    </div>
+
+    <!-- Auth nav items -->
+    <div class="nav-auth">
+      <span id="navGreet" style="display:none;color:var(--gold);font-size:0.84rem;font-weight:600;"></span>
+      <a href="#" id="navLoginLink"  class="nav-auth-link">Sign In</a>
+      <a href="#" id="navLogoutLink" class="nav-auth-link" style="display:none;">Sign Out</a>
+    </div>
+
+    <a class="nav-cta" href="https://wa.me/2349057773361?text=Hi%2C%20I%27d%20like%20to%20place%20an%20order" target="_blank" rel="noopener">Order on WhatsApp</a>
+    <button class="nav-burger" id="burgerBtn" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     AUTH MODAL
+══════════════════════════════════════════ -->
+<div id="authModal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-label="Sign in or create account">
+  <div class="modal-box">
+    <button id="modalClose" class="modal-close" aria-label="Close">&times;</button>
+    <div class="modal-logo">Rewind <span class="dot">·</span> Luxury Place</div>
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button class="auth-tab" data-tab="login">Sign In</button>
+      <button class="auth-tab active" data-tab="signup">Create Account</button>
+    </div>
+
+    <!-- ── Login panel ── -->
+    <div id="panel-login" class="auth-panel" style="display:none;">
+      <p class="auth-sub">Welcome back — sign in to continue.</p>
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="li-email">Email</label>
+          <input id="li-email" type="email" placeholder="you@email.com" required autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="li-password">Password</label>
+          <input id="li-password" type="password" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <div id="li-msg" class="auth-msg" style="display:none;"></div>
+        <button id="li-btn" type="submit" class="btn btn-gold auth-submit">Sign In</button>
+      </form>
+      <p class="auth-switch">No account? <a href="#" id="goToSignup">Create one</a></p>
+    </div>
+
+    <!-- ── Sign-up panel ── -->
+    <div id="panel-signup" class="auth-panel">
+      <p class="auth-sub">Join Rewind — takes less than a minute.</p>
+      <form id="signupForm" novalidate>
+        <div class="field">
+          <label for="su-name">Full Name</label>
+          <input id="su-name" type="text" placeholder="Your name" required autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="su-email">Email</label>
+          <input id="su-email" type="email" placeholder="you@email.com" required autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="su-password">Password</label>
+          <input id="su-password" type="password" placeholder="Min. 8 characters" required autocomplete="new-password">
+        </div>
+        <div class="field">
+          <label for="su-confirm">Confirm Password</label>
+          <input id="su-confirm" type="password" placeholder="Repeat password" required autocomplete="new-password">
+        </div>
+        <div id="su-msg" class="auth-msg" style="display:none;"></div>
+        <button id="su-btn" type="submit" class="btn btn-gold auth-submit">Create Account</button>
+      </form>
+      <p class="auth-switch">Already have an account? <a href="#" id="goToLogin">Sign in</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<header class="hero" id="top">
+  <div class="container hero-grid">
+    <div>
+      <div class="hero-rating">
+        <span class="stars">★★★★☆</span> 4.0 · 1,382 reviews
+      </div>
+      <h1>The night doesn't<br>have to end <em>early</em>.</h1>
+      <div class="hero-tagline">
+        <span>Restaurant</span><span>Lounge</span><span>Game Nights</span>
+      </div>
+      <div class="hero-ctas">
+        <a class="btn btn-gold" href="https://wa.me/2349057773361?text=Hi%2C%20I%27d%20like%20to%20place%20an%20order" target="_blank" rel="noopener">
+          Order on WhatsApp
+        </a>
+        <a class="btn btn-ghost" href="#menu">View Menu</a>
+      </div>
+    </div>
+
+    <div class="dial-wrap" aria-hidden="true">
+      <svg viewBox="0 0 420 420">
+        <defs>
+          <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#c9a368"/>
+            <stop offset="100%" stop-color="#7a2e2e"/>
+          </linearGradient>
+        </defs>
+        <circle cx="210" cy="210" r="190" fill="none" stroke="rgba(201,163,104,0.15)" stroke-width="1"/>
+        <circle cx="210" cy="210" r="150" fill="none" stroke="rgba(201,163,104,0.12)" stroke-width="1"/>
+        <circle cx="210" cy="210" r="190" fill="none" stroke="url(#arcGrad)" stroke-width="2.5"
+          stroke-dasharray="850 1200" stroke-linecap="round" transform="rotate(-90 210 210)"/>
+        <g class="dial-spin">
+          <g stroke="rgba(245,240,232,0.35)" stroke-width="1">
+            <line x1="210" y1="22" x2="210" y2="36"/>
+            <line x1="210" y1="384" x2="210" y2="398"/>
+            <line x1="22" y1="210" x2="36" y2="210"/>
+            <line x1="384" y1="210" x2="398" y2="210"/>
+          </g>
+          <g fill="var(--gold)" opacity="0.85">
+            <circle cx="210" cy="28" r="2.4"/>
+            <circle cx="210" cy="392" r="2.4"/>
+            <circle cx="28" cy="210" r="2.4"/>
+            <circle cx="392" cy="210" r="2.4"/>
+          </g>
+        </g>
+        <text x="210" y="30" text-anchor="middle" font-family="Inter" font-size="9" letter-spacing="2" fill="#a89685">DINE</text>
+        <text x="210" y="395" text-anchor="middle" font-family="Inter" font-size="12" letter-spacing="2" fill="#a89685">5AM</text>
+        <text x="396" y="213" text-anchor="middle" font-family="Inter" font-size="9" letter-spacing="2" fill="#a89685">PLAY</text>
+        <text x="24" y="213" text-anchor="middle" font-family="Inter" font-size="9" letter-spacing="2" fill="#a89685">SIP</text>
+      </svg>
+      <div class="dial-center">
+        <div class="label">Open Daily</div>
+        <div class="time">Closes</div>
+        <div class="time-sub">5:00 AM</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-cue"><span>Scroll</span><span class="line"></span></div>
+</header>
+
+<!-- ══════════════════════════════════════════
+     ABOUT
+══════════════════════════════════════════ -->
+<section id="about" class="about">
+  <div class="container about-grid">
+    <div class="about-copy reveal">
+      <div class="eyebrow">About Us</div>
+      <h2 class="serif" style="font-size:2.2rem;margin-bottom:18px;color:var(--cream);">Independence Layout's slow-burn favourite</h2>
+      <p>Rewind Luxury Place is a relaxed dine-in, takeaway, and delivery spot in <strong>Independence Layout, Enugu</strong> — the kind of place where dinner quietly turns into drinks, and drinks turn into a game night you didn't plan for.</p>
+      <p>Good food, good company, and a room that knows how to hold both. Expect to spend around <strong>₦10,000–₦20,000 per person</strong>, and no pressure to rush off — we're just getting going when other places start closing up.</p>
+    </div>
+    <div class="about-stats reveal">
+      <div class="about-stat">
+        <div class="num">5AM</div>
+        <div class="cap">Closing time, every night</div>
+      </div>
+      <div class="about-stat">
+        <div class="num">₦10k–20k</div>
+        <div class="cap">Typical spend per person</div>
+      </div>
+      <div class="about-stat">
+        <div class="num">3</div>
+        <div class="cap">Ways to enjoy it — dine-in, takeaway, delivery</div>
+      </div>
+      <div class="about-stat">
+        <div class="num">4.0★</div>
+        <div class="cap">From 1,382 reviews</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     MENU
+══════════════════════════════════════════ -->
+<section id="menu">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow">On The Menu</div>
+      <h2>Built for sharing, built for staying</h2>
+      <p>A taste of what's cooking — the full menu goes deeper, message us on WhatsApp for the complete list.</p>
+    </div>
+
+    <div class="menu-group reveal">
+      <div class="menu-group-title">
+        <h3>Mains &amp; Grills</h3>
+        <div class="rule"></div>
+      </div>
+      <div class="menu-grid">
+        <div class="menu-card"><h4>Fish Barbecue</h4><p>Smoky, char-kissed and ready for the table.</p></div>
+        <div class="menu-card"><h4>Chicken Tenders and Fries</h4><p>Crisp, golden, and gone before you know it.</p></div>
+        <div class="menu-card"><h4>Prawns and Chicken Wings</h4><p>A platter made for passing around.</p></div>
+        <div class="menu-card"><h4>Turkey and Chips with Smirnoff Ice</h4><p>The combo regulars order without looking at the menu.</p></div>
+        <div class="menu-card"><h4>Fried Rice Seafood</h4><p>Loaded, savoury, and full of the sea.</p></div>
+        <div class="menu-card"><h4>Nigerian Fried Rice and Turkey</h4><p>A classic done right, every single time.</p></div>
+      </div>
+    </div>
+
+    <div class="menu-group reveal">
+      <div class="menu-group-title">
+        <h3>Drinks &amp; Mocktails</h3>
+        <div class="rule"></div>
+      </div>
+      <div class="menu-grid">
+        <div class="menu-card"><h4>Mocktail</h4><p>Bright, chilled, and built for a long evening.</p></div>
+        <div class="menu-card"><h4>Stir Fry Noodles</h4><p>Wok-tossed and packed with flavour — a lounge favourite.</p></div>
+      </div>
+    </div>
+
+    <div class="menu-group reveal">
+      <div class="menu-group-title">
+        <h3>Sides &amp; Snacks</h3>
+        <div class="rule"></div>
+      </div>
+      <div class="menu-grid">
+        <div class="menu-card"><h4>Irish Potato Chips with Ketchup</h4><p>Simple, crisp, the perfect order-alongside.</p></div>
+        <div class="menu-card"><h4>Chefs Special Salad</h4><p>Fresh and finished with the kitchen's own touch.</p></div>
+      </div>
+    </div>
+
+    <p class="menu-note reveal">Full menu available — <a href="https://wa.me/2349057773361?text=Hi%2C%20can%20I%20get%20the%20full%20menu%3F" target="_blank" rel="noopener">message us on WhatsApp for the complete list</a></p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     GAME NIGHTS
+══════════════════════════════════════════ -->
+<section id="game-nights" class="game-band">
+  <div class="container game-inner">
+    <div class="reveal">
+      <div class="eyebrow">The Other Reason We're Open Till 5</div>
+      <h2 class="serif">Game Nights at Rewind</h2>
+      <p>Pull up a seat, order another round, and let the table decide what's next. Some nights it's football on the screens, some nights it's cards in the corner — either way, nobody's watching the clock.</p>
+      <div class="game-tags">
+        <span class="game-tag">Live Screens</span>
+        <span class="game-tag">Table Games</span>
+        <span class="game-tag">Drinks Flowing</span>
+        <span class="game-tag">No Rush</span>
+      </div>
+    </div>
+    <div class="game-score reveal">
+      <div class="vs">Good Food <span style="color:#e8c98f;">+</span><br>Good Company</div>
+      <div class="cap">Every Night · Till 5AM</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     REVIEWS
+══════════════════════════════════════════ -->
+<section id="reviews">
+  <div class="container">
+    <div class="reviews-top reveal">
+      <div class="eyebrow">What Guests Say</div>
+      <div class="big-rating">4.0 ★</div>
+      <p style="color:var(--cream-dim);margin-top:6px;">from 1,382 reviews</p>
+    </div>
+    <div class="review-cards">
+      <div class="review-card reveal">
+        <div class="quote-mark">"</div>
+        <p class="text">So beautiful ❤️</p>
+        <div class="who">Chiamaka O. <span class="stars">★★★★★</span></div>
+      </div>
+      <div class="review-card reveal">
+        <div class="quote-mark">"</div>
+        <p class="text">My go-to spot for game nights with the boys, food never disappoints.</p>
+        <div class="who">Emeka N. <span class="stars">★★★★☆</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     LOCATION
+══════════════════════════════════════════ -->
+<section id="location" class="location">
+  <div class="container loc-grid">
+    <div class="reveal">
+      <div class="eyebrow">Find Us</div>
+      <h2 class="serif" style="font-size:2.1rem;margin-bottom:30px;color:var(--cream);">Independence Layout, Enugu</h2>
+      <div class="loc-detail">
+        <div class="icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-7.2-7-12a7 7 0 1114 0c0 4.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.4"/></svg>
+        </div>
+        <div>
+          <h4>Address</h4>
+          <p>10A Igboeze St, Independence Layout,<br>Enugu 400102, Enugu</p>
+        </div>
+      </div>
+      <div class="loc-detail">
+        <div class="icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+        </div>
+        <div>
+          <h4>Hours</h4>
+          <p>Open Daily · Closes 5AM</p>
+        </div>
+      </div>
+      <div class="loc-detail">
+        <div class="icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="18" height="13" rx="1.5"/><path d="M16 3v6M8 3v6M3 11h18"/></svg>
+        </div>
+        <div>
+          <h4>Service Options</h4>
+          <div class="service-tags">
+            <span class="service-tag">Dine-in</span>
+            <span class="service-tag">Takeaway</span>
+            <span class="service-tag">Delivery</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="map-frame reveal">
+      <iframe
+        src="https://www.google.com/maps?q=10A+Igboeze+St,+Independence+Layout,+Enugu+400102,+Enugu,+Nigeria&output=embed"
+        loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+        title="Map to Rewind Luxury Place">
+      </iframe>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FOOTER / CONTACT
+══════════════════════════════════════════ -->
+<footer id="contact">
+  <div class="container">
+    <div class="footer-cta reveal">
+      <h2 class="serif">Ready when you are.</h2>
+      <p>Tap below and we'll have your order moving — dine-in, takeaway, or delivery.</p>
+      <div class="footer-ctas">
+        <a class="btn btn-gold" href="https://wa.me/2349057773361?text=Hi%2C%20I%27d%20like%20to%20place%20an%20order" target="_blank" rel="noopener">Order on WhatsApp</a>
+        <a class="btn btn-ghost" href="tel:09057773361">Call 0905 777 3361</a>
+      </div>
+    </div>
+    <div style="padding:0;">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo">Rewind <span class="dot">·</span> Luxury Place</div>
+          <p>Restaurant, lounge, and game nights in Independence Layout, Enugu. The night doesn't have to end early.</p>
+        </div>
+        <div class="footer-col">
+          <h5>Visit</h5>
+          <p>10A Igboeze St,<br>Independence Layout,<br>Enugu 400102</p>
+          <a href="tel:09057773361">0905 777 3361</a>
+        </div>
+        <div class="footer-col">
+          <h5>Follow</h5>
+          <div class="footer-socials">
+            <a href="#" aria-label="Instagram">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+            </a>
+            <a href="#" aria-label="Facebook">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 9h2V6h-2c-2 0-3.5 1.5-3.5 3.5V11H8v3h2.5v6h3v-6H16l.5-3h-3V9.5c0-.3.2-.5.5-.5z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">Rewind Luxury Place — Independence Layout, Enugu</div>
+    </div>
+  </div>
+</footer>
+
+<!-- WhatsApp FAB -->
+<a class="fab" href="https://wa.me/2349057773361?text=Hi%2C%20I%27d%20like%20to%20place%20an%20order" target="_blank" rel="noopener" aria-label="Order on WhatsApp">
+  <svg viewBox="0 0 24 24" fill="#1a1410"><path d="M17.5 14.4c-.3-.1-1.7-.8-1.9-.9-.3-.1-.5-.1-.6.1-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-.8-.4-1.7-.9-2.4-1.6-.6-.6-1.1-1.4-1.5-2.1-.1-.2 0-.4.1-.5.2-.2.4-.5.6-.7.1-.2.2-.4.1-.6-.1-.2-.6-1.5-.8-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.7.7-1 1.6-1 2.6.1 1.2.6 2.4 1.4 3.5 1.5 2 3.4 3.4 5.7 4.1.6.2 1.2.3 1.9.2.8-.1 1.6-.7 2-1.4.1-.3.2-.6.1-.9-.1-.1-.2-.1-.4-.2z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.6 1.4 5.1L2 22l5-1.3c1.4.8 3.1 1.2 4.9 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3C4.1 15 3.6 13.5 3.6 12c0-4.6 3.8-8.4 8.4-8.4s8.4 3.8 8.4 8.4-3.8 8.2-8.4 8.2z"/></svg>
+</a>
+
+<!-- Mobile menu -->
+<nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#about">About</a>
+    <a href="#menu">Menu</a>
+    <a href="#game-nights">Game Nights</a>
+    <a href="#location">Location</a>
+    <a href="#contact">Contact</a>
+    <a href="#" id="mobileLoginLink" style="color:var(--gold);">Sign In / Create Account</a>
+    <a class="btn btn-gold" href="https://wa.me/2349057773361?text=Hi%2C%20I%27d%20like%20to%20place%20an%20order" target="_blank" rel="noopener">Order on WhatsApp</a>
+  </div>
+</nav>
+
+<script type="module" src="script.js"></script>
+</body>
+</html>
