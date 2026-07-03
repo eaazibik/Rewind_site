@@ -67,3 +67,38 @@ create table if not exists public.posts (
   image_url   text,
   created_at  timestamptz default now()
 );
+
+-- 7. Events / flyers table (for public event cards and flyer posts)
+create table if not exists public.events (
+  id          uuid default gen_random_uuid() primary key,
+  organizer_id uuid references auth.users(id) on delete set null,
+  title       text not null,
+  description text,
+  location    text,
+  start_time  timestamptz,
+  image_url   text,
+  kind        text default 'event',
+  is_published boolean default true,
+  created_at  timestamptz default now()
+);
+
+alter table public.events enable row level security;
+
+create policy "Public can read published events"
+  on public.events for select
+  using (is_published = true);
+
+create policy "Organizers can insert their own events"
+  on public.events for insert
+  with check (auth.uid() = organizer_id);
+
+create policy "Organizers can update their own events"
+  on public.events for update
+  using (auth.uid() = organizer_id);
+
+create policy "Organizers can delete their own events"
+  on public.events for delete
+  using (auth.uid() = organizer_id);
+
+-- 8. Storage bucket tip:
+--    Create a public bucket named event-images in Supabase Storage and allow authenticated uploads.

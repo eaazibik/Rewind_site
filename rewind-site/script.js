@@ -61,8 +61,19 @@ const postSubmit = document.getElementById('postSubmit');
 const postTitle = document.getElementById('postTitle');
 const postBody = document.getElementById('postBody');
 const postImage = document.getElementById('postImage');
+const eventForm = document.getElementById('eventForm');
+const eventSubmit = document.getElementById('eventSubmit');
+const eventTypeSelect = document.getElementById('eventType');
+const eventTitle = document.getElementById('eventTitle');
+const eventDescription = document.getElementById('eventDescription');
+const eventLocation = document.getElementById('eventLocation');
+const eventStartTime = document.getElementById('eventStartTime');
+const eventImage = document.getElementById('eventImage');
 const superadminPanel = document.getElementById('superadminPanel');
 const adminRequestsList = document.getElementById('adminRequestsList');
+const eventList = document.getElementById('eventList');
+const openEventFormBtn = document.getElementById('openEventFormBtn');
+const EVENT_STORAGE_KEY = 'rewind-events';
 
 async function updateAdminUI() {
   // Wait for profile to be loaded
@@ -89,8 +100,10 @@ async function updateAdminUI() {
   // show post form only if allowed
   if (canCreatePost()) {
     postForm.style.display = 'block';
+    eventForm.style.display = 'block';
   } else {
     postForm.style.display = 'none';
+    eventForm.style.display = 'none';
   }
 
   // show superadmin panel
@@ -149,7 +162,7 @@ postForm?.addEventListener('submit', async (e) => {
       });
     }
     const supabase = (await import('./supabase.js')).supabase;
-    const { data, error } = await supabase.from('posts').insert({ author_id: currentProfile.id, title: postTitle.value, body: postBody.value, image_url: imageUrl });
+    const { error } = await supabase.from('posts').insert({ author_id: currentProfile.id, title: postTitle.value, body: postBody.value, image_url: imageUrl });
     if (error) throw error;
     postTitle.value = ''; postBody.value = ''; postImage.value = null;
     alert('Post created');
@@ -157,6 +170,141 @@ postForm?.addEventListener('submit', async (e) => {
   finally { postSubmit.disabled = false; }
 });
 
+function escapeHtml(value) {
+  return String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function formatEventDate(value) {
+  if (!value) return 'Details coming soon';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'Details coming soon';
+  return new Intl.DateTimeFormat([], {
+    weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
+  }).format(date);
+}
+
+async function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadOrConvertImage(file) {
+  const supabase = (await import('./supabase.js')).supabase;
+  try {
+    const path = `event-images/${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+    const { error } = await supabase.storage.from('event-images').upload(path, file, { upsert: true });
+    if (error) throw error;
+    const { data } = supabase.storage.from('event-images').getPublicUrl(path);
+    return data?.publicUrl || null;
+  } catch (err) {
+    console.warn('Storage upload failed, using data URL fallback:', err);
+    return readFileAsDataUrl(file);
+  }
+}
+
+async function saveEventEntry(entry) {
+  try {
+    const supabase = (await import('./supabase.js')).supabase;
+    const { error } = await supabase.from('events').insert({
+      organizer_id: currentProfile?.id || null,
+      title: entry.title,
+      description: entry.description,
+      location: entry.location,
+      start_time: entry.start_time || null,
+      image_url: entry.image_url || null,
+      kind: entry.kind,
+      is_published: true
+    });
+    if (error) throw error;
+    return { source: 'supabase' };
+  } catch (err) {
+    const existing = JSON.parse(localStorage.getItem(EVENT_STORAGE_KEY) || '[]');
+    existing.unshift({ ...entry, created_at: new Date().toISOString() });
+    localStorage.setItem(EVENT_STORAGE_KEY, JSON.stringify(existing));
+    console.warn('Falling back to local storage for event/flyer:', err);
+    return { source: 'local' };
+  }
+}
+
+function renderEventEntries(entries) {
+  if (!eventList) return;
+  if (!entries || entries.length === 0) {
+    eventList.innerHTML = '<div class="event-empty">No events or flyers have been posted yet.</div>';
+    return;
+  }
+
+  eventList.innerHTML = entries.map(entry => {
+    const type = entry.kind === 'flyer' ? 'Flyer' : 'Event';
+    const dateLabel = formatEventDate(entry.start_time || entry.created_at);
+    const imageMarkup = entry.image_url ? `<img class="event-card-image" src="${escapeHtml(entry.image_url)}" alt="${escapeHtml(entry.title)}">` : '';
+    const locationMarkup = entry.location ? `<p><strong>Location:</strong> ${escapeHtml(entry.location)}</p>` : '';
+    return `
+      <article class="event-card reveal">
+        ${imageMarkup}
+        <div class="event-card-body">
+          <span class="event-pill">${escapeHtml(type)}</span>
+          <div class="event-meta">${escapeHtml(dateLabel)}</div>
+          <h3>${escapeHtml(entry.title)}</h3>
+          <p>${escapeHtml(entry.description || 'More details coming soon.')}</p>
+          ${locationMarkup}
+        </div>
+      </article>
+    `;
+  }).join('');
+}
+
+async function loadEventEntries() {
+  if (!eventList) return;
+  eventList.innerHTML = '<div class="event-empty">Loading events…</div>';
+  try {
+    const supabase = (await import('./supabase.js')).supabase;
+    const { data, error } = await supabase.from('events').select('*').eq('is_published', true).order('start_time', { ascending: true });
+    if (error) throw error;
+    renderEventEntries(data || []);
+  } catch (err) {
+    const localEntries = JSON.parse(localStorage.getItem(EVENT_STORAGE_KEY) || '[]');
+    renderEventEntries(localEntries);
+  }
+}
+
+eventForm?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  eventSubmit.disabled = true;
+  try {
+    let imageUrl = null;
+    if (eventImage.files && eventImage.files[0]) {
+      imageUrl = await uploadOrConvertImage(eventImage.files[0]);
+    }
+    const result = await saveEventEntry({
+      title: eventTitle.value.trim(),
+      description: eventDescription.value.trim(),
+      location: eventLocation.value.trim(),
+      start_time: eventStartTime.value || null,
+      image_url: imageUrl,
+      kind: eventTypeSelect.value
+    });
+    eventForm.reset();
+    eventTypeSelect.value = 'event';
+    await loadEventEntries();
+    alert(result.source === 'supabase' ? 'Event or flyer published.' : 'Event or flyer saved locally for preview.');
+  } catch (err) {
+    console.error(err);
+    alert('Failed to publish event or flyer');
+  } finally {
+    eventSubmit.disabled = false;
+  }
+});
+
+openEventFormBtn?.addEventListener('click', () => {
+  eventTitle?.focus();
+  eventForm?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+
 // Periodically update admin UI (and once now)
 setTimeout(updateAdminUI, 700);
 setInterval(updateAdminUI, 12000);
+loadEventEntries();
