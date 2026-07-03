@@ -69,6 +69,8 @@ const eventDescription = document.getElementById('eventDescription');
 const eventLocation = document.getElementById('eventLocation');
 const eventStartTime = document.getElementById('eventStartTime');
 const eventImage = document.getElementById('eventImage');
+const eventImagePreviewWrap = document.getElementById('eventImagePreviewWrap');
+const eventImagePreview = document.getElementById('eventImagePreview');
 const superadminPanel = document.getElementById('superadminPanel');
 const adminRequestsList = document.getElementById('adminRequestsList');
 const eventList = document.getElementById('eventList');
@@ -162,7 +164,8 @@ postForm?.addEventListener('submit', async (e) => {
       });
     }
     const supabase = (await import('./supabase.js')).supabase;
-    const { error } = await supabase.from('posts').insert({ author_id: currentProfile.id, title: postTitle.value, body: postBody.value, image_url: imageUrl });
+    const authorId = currentProfile?.id || await getCurrentUserId();
+    const { error } = await supabase.from('posts').insert({ author_id: authorId, title: postTitle.value, body: postBody.value, image_url: imageUrl });
     if (error) throw error;
     postTitle.value = ''; postBody.value = ''; postImage.value = null;
     alert('Post created');
@@ -181,6 +184,12 @@ function formatEventDate(value) {
   return new Intl.DateTimeFormat([], {
     weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
   }).format(date);
+}
+
+async function getCurrentUserId() {
+  const supabase = (await import('./supabase.js')).supabase;
+  const { data: { session } } = await supabase.auth.getSession();
+  return session?.user?.id || null;
 }
 
 async function readFileAsDataUrl(file) {
@@ -209,8 +218,10 @@ async function uploadOrConvertImage(file) {
 async function saveEventEntry(entry) {
   try {
     const supabase = (await import('./supabase.js')).supabase;
+    const organizerId = entry.organizer_id || await getCurrentUserId();
+    if (!organizerId) throw new Error('No authenticated user');
     const { error } = await supabase.from('events').insert({
-      organizer_id: currentProfile?.id || null,
+      organizer_id: organizerId,
       title: entry.title,
       description: entry.description,
       location: entry.location,
@@ -271,6 +282,18 @@ async function loadEventEntries() {
   }
 }
 
+eventImage?.addEventListener('change', async () => {
+  const file = eventImage.files?.[0];
+  if (!file) {
+    eventImagePreviewWrap.style.display = 'none';
+    eventImagePreview.removeAttribute('src');
+    return;
+  }
+  const dataUrl = await readFileAsDataUrl(file);
+  eventImagePreview.src = dataUrl;
+  eventImagePreviewWrap.style.display = 'block';
+});
+
 eventForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
   eventSubmit.disabled = true;
@@ -289,6 +312,8 @@ eventForm?.addEventListener('submit', async (e) => {
     });
     eventForm.reset();
     eventTypeSelect.value = 'event';
+    eventImagePreviewWrap.style.display = 'none';
+    eventImagePreview.removeAttribute('src');
     await loadEventEntries();
     alert(result.source === 'supabase' ? 'Event or flyer published.' : 'Event or flyer saved locally for preview.');
   } catch (err) {
