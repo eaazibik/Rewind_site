@@ -27,11 +27,17 @@ mobileMenu.querySelectorAll('a').forEach(a => {
 const io = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
 }, { threshold: 0.12 });
-document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+function observeReveals(root = document) {
+  root.querySelectorAll('.reveal').forEach(el => io.observe(el));
+}
+
+observeReveals();
 
 // ── Auth modal wiring ──────────────────────────────────────────
 // Open / close buttons
 document.getElementById('navLoginLink')?.addEventListener('click',  e => { e.preventDefault(); openModal('authModal'); switchTab('login'); });
+document.getElementById('mobileLoginLink')?.addEventListener('click', e => { e.preventDefault(); openModal('authModal'); switchTab('login'); mobileMenu.classList.remove('open'); burgerBtn.setAttribute('aria-expanded', 'false'); });
 document.getElementById('navLogoutLink')?.addEventListener('click', e => { e.preventDefault(); handleLogout(); });
 document.getElementById('modalClose')?.addEventListener('click',    ()  => closeModal('authModal'));
 document.getElementById('authModal')?.addEventListener('click',     e  => { if (e.target.id === 'authModal') closeModal('authModal'); });
@@ -245,6 +251,7 @@ function renderEventEntries(entries) {
   if (!eventList) return;
   if (!entries || entries.length === 0) {
     eventList.innerHTML = '<div class="event-empty">No events or flyers have been posted yet.</div>';
+    observeReveals();
     return;
   }
 
@@ -266,6 +273,7 @@ function renderEventEntries(entries) {
       </article>
     `;
   }).join('');
+  observeReveals(eventList);
 }
 
 async function loadEventEntries() {
@@ -273,7 +281,7 @@ async function loadEventEntries() {
   eventList.innerHTML = '<div class="event-empty">Loading events…</div>';
   try {
     const supabase = (await import('./supabase.js')).supabase;
-    const { data, error } = await supabase.from('events').select('*').eq('is_published', true).order('start_time', { ascending: true });
+    const { data, error } = await supabase.from('events').select('*').eq('is_published', true).order('created_at', { ascending: false });
     if (error) throw error;
     renderEventEntries(data || []);
   } catch (err) {

@@ -58,6 +58,26 @@ create table if not exists public.admin_requests (
   requested_at timestamptz default now()
 );
 
+alter table public.admin_requests enable row level security;
+
+create policy "Users can request admin access"
+  on public.admin_requests for insert
+  with check (auth.uid() = user_id);
+
+create policy "Users can view their own requests"
+  on public.admin_requests for select
+  using (auth.uid() = user_id);
+
+create policy "Superadmins can manage requests"
+  on public.admin_requests for update
+  using (
+    exists (
+      select 1 from public.profiles p
+      where p.id = auth.uid()
+        and p.email = 'agucharles667@gmail.com'
+    )
+  );
+
 -- 6. Posts table (admins can create posts)
 create table if not exists public.posts (
   id          uuid default gen_random_uuid() primary key,
@@ -67,6 +87,63 @@ create table if not exists public.posts (
   image_url   text,
   created_at  timestamptz default now()
 );
+
+alter table public.posts enable row level security;
+
+create policy "Public can view posts"
+  on public.posts for select
+  using (true);
+
+create policy "Admins can insert posts"
+  on public.posts for insert
+  with check (
+    auth.uid() is not null and (
+      exists (
+        select 1 from public.profiles p
+        where p.id = auth.uid()
+          and p.role in ('admin', 'superadmin')
+      )
+      or exists (
+        select 1 from public.profiles p
+        where p.id = auth.uid()
+          and p.email = 'agucharles667@gmail.com'
+      )
+    )
+  );
+
+create policy "Admins can update posts"
+  on public.posts for update
+  using (
+    auth.uid() is not null and (
+      exists (
+        select 1 from public.profiles p
+        where p.id = auth.uid()
+          and p.role in ('admin', 'superadmin')
+      )
+      or exists (
+        select 1 from public.profiles p
+        where p.id = auth.uid()
+          and p.email = 'agucharles667@gmail.com'
+      )
+    )
+  );
+
+create policy "Admins can delete posts"
+  on public.posts for delete
+  using (
+    auth.uid() is not null and (
+      exists (
+        select 1 from public.profiles p
+        where p.id = auth.uid()
+          and p.role in ('admin', 'superadmin')
+      )
+      or exists (
+        select 1 from public.profiles p
+        where p.id = auth.uid()
+          and p.email = 'agucharles667@gmail.com'
+      )
+    )
+  );
 
 -- 7. Events / flyers table (for public event cards and flyer posts)
 create table if not exists public.events (
