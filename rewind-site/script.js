@@ -34,6 +34,112 @@ function observeReveals(root = document) {
 
 observeReveals();
 
+// ── Live hours clock ──────────────────────────────────────────
+const schedule = [
+  { day: 'Sunday', openHour: 12, openMinute: 30 },
+  { day: 'Monday', openHour: 12, openMinute: 0 },
+  { day: 'Tuesday', openHour: 12, openMinute: 0 },
+  { day: 'Wednesday', openHour: 12, openMinute: 0 },
+  { day: 'Thursday', openHour: 12, openMinute: 0 },
+  { day: 'Friday', openHour: 12, openMinute: 0 },
+  { day: 'Saturday', openHour: 8, openMinute: 0 }
+];
+
+const statusLabel = document.getElementById('hoursStatusLabel');
+const timeValue = document.getElementById('hoursTimeValue');
+const timeSub = document.getElementById('hoursTimeSub');
+const hoursNote = document.getElementById('hoursNote');
+
+function formatCountdown(ms) {
+  const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  }
+  if (minutes > 0) {
+    return `${minutes}m ${seconds}s`;
+  }
+  return `${seconds}s`;
+}
+
+function formatClockTime(date) {
+  return new Intl.DateTimeFormat([], {
+    hour: 'numeric',
+    minute: '2-digit'
+  }).format(date);
+}
+
+function getHoursStatus(now = new Date()) {
+  const today = new Date(now);
+  today.setHours(0, 0, 0, 0);
+
+  const candidates = [0, -1];
+  for (const offset of candidates) {
+    const base = new Date(today);
+    base.setDate(base.getDate() + offset);
+    const entry = schedule[base.getDay()];
+    const start = new Date(base);
+    start.setHours(entry.openHour, entry.openMinute, 0, 0);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 1);
+    end.setHours(5, 0, 0, 0);
+
+    if (now >= start && now < end) {
+      return {
+        isOpen: true,
+        targetTime: end,
+        label: 'Open now',
+        sublabel: 'until closing',
+        note: `${entry.day} • open ${formatClockTime(start)} to 5:00 AM`
+      };
+    }
+  }
+
+  const nextStart = new Date(now);
+  nextStart.setSeconds(0, 0);
+  for (let offset = 0; offset < 8; offset += 1) {
+    const base = new Date(today);
+    base.setDate(base.getDate() + offset);
+    const entry = schedule[base.getDay()];
+    const start = new Date(base);
+    start.setHours(entry.openHour, entry.openMinute, 0, 0);
+    if (start > now) {
+      return {
+        isOpen: false,
+        targetTime: start,
+        label: 'Closed now',
+        sublabel: 'until opening',
+        note: `${entry.day} • opens at ${formatClockTime(start)}`
+      };
+    }
+  }
+
+  return {
+    isOpen: false,
+    targetTime: new Date(now.getTime() + 60 * 60 * 1000),
+    label: 'Closed now',
+    sublabel: 'until opening',
+    note: 'Check back soon for the next opening time.'
+  };
+}
+
+function updateHoursClock() {
+  const status = getHoursStatus();
+  if (!statusLabel || !timeValue || !timeSub || !hoursNote) return;
+
+  const countdown = formatCountdown(Math.max(0, status.targetTime.getTime() - Date.now()));
+  statusLabel.textContent = status.label;
+  timeValue.textContent = countdown;
+  timeSub.textContent = status.sublabel;
+  hoursNote.textContent = status.note;
+}
+
+updateHoursClock();
+setInterval(updateHoursClock, 1000);
+
 // ── Auth modal wiring ──────────────────────────────────────────
 // Open / close buttons
 document.getElementById('navLoginLink')?.addEventListener('click',  e => { e.preventDefault(); openModal('authModal'); switchTab('login'); });
