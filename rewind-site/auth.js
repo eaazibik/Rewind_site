@@ -167,7 +167,14 @@ export async function handleLogout() {
 // ── Modal helpers ─────────────────────────────────────────────
 export function openModal(id)  {
   const m = document.getElementById(id);
-  if (m) { m.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+  if (m) {
+    m.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    requestAnimationFrame(() => {
+      const box = m.querySelector('.modal-box');
+      if (box) box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
 }
 export function closeModal(id) {
   const m = document.getElementById(id);
